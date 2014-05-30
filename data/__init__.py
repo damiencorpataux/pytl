@@ -86,7 +86,7 @@ def suggest(fulltext=None, line=None, station=None, order=None,
         'line': r.line.name,
         'station': r.station.name,
         'root': r.station.root,
-        'direction': r.direction,
+        'direction': r.direction, #FIXME: must be the terminus stop station name
         'orientation': r.orientation
     } for r in q.all()]
 
@@ -102,6 +102,6 @@ def departures(station, line=None):
         yield {
             'line': item['line'],
             'station': item['station'],
-            'departures': departures['departures'],
+            'timetable': departures['timetable'], #FIXME: must be the terminus stop station name
             'direction': item['direction']}
 t=departures

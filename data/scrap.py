@@ -67,7 +67,7 @@ def departures(line, station, direction):
     departures = soup.find_all('tr', **{'class':'param'})
     alerts = soup.find_all('p', **{'class':'htr_perturbation_detail'})
     return {
-        'departures': [tag.text for tag in departures
+        'timetable': [tag.text for tag in departures
                        if not tag.text.startswith('*')],
         'alerts': [tag.text for tag in alerts]
     }

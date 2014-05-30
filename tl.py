@@ -1,4 +1,4 @@
-#!venv/bin/python
+#!/usr/bin/env python
 
 """
 Welcome to the tl api.

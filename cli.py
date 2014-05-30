@@ -2,9 +2,10 @@ import argh
 import data
 import warnings; warnings.filterwarnings("ignore", category=UserWarning)
 
-def search(string : 'search string',
-           line : 'line name filter string' = None,
-           station : 'station name filter string' = None):
+@argh.arg('string', help='search string')
+@argh.arg('-l', '--line', help='line name filter string')
+@argh.arg('-s', '--station', help='station name filter string')
+def search(string,line=None,station=None):
     """
     lists matching stations and lines
     """
@@ -12,13 +13,31 @@ def search(string : 'search string',
         print('%(line)s:\t%(station)s (%(direction)s %(orientation)s)' % item)
 
 #@argh.aliases('dep')
-def deps(station : 'station search string',
-         line : 'line search string' = None):
+@argh.arg('station', help='station search string')
+@argh.arg('-l', '--line', help='line search string')
+def deps(station,line=None):
     """
     lists departures for matching stations and lines
     """
     for item in data.departures(station, line):
-        print('%(station)s %(line)s %(direction)s %(departures)s' % item)
+        print('%(station)s %(line)s %(direction)s %(timetable)s' % item)
+
+def web():
+    """
+    starts the standalone webserver (for dev purpose)
+    """
+    import web
+    web.app.run(host='0.0.0.0', port=5000, debug=True)
+
+def init():
+    """
+    Initializes database (WARNING: drops, creates and popoulates)
+    """
+    y = raw_input('This will drop, create and populate database. '
+                  'Continue [y/N] ?')
+    if y in ['y', 'yes']:
+        import data.db
+        data.db.populate()
 
 def run():
-    argh.dispatch_commands([search, deps])
+    argh.dispatch_commands([search, deps, web, init])
