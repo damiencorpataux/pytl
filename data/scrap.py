@@ -49,19 +49,21 @@ def stops(line):
                   **{'name': tag.text}) for tag in tags]
     return stops
 
-def departures(line, station):
+def departures(line, station, direction):
     """
     Returns the next departures for the given line and station
     and optionnal alerts about this line/station.
     :param line: 'name' of the line
     :param station: 'name' of the station
     """
+    if direction not in ['A', 'R']:
+        raise ValueError('"direction" valid values are "A", "B"')
     soup = pour(
         'http://www.t-l.ch/htr.php',
         params={
             'ligne': line,
             'arret': station,
-            'sens': 'A'})
+            'sens': direction})
     departures = soup.find_all('tr', **{'class':'param'})
     alerts = soup.find_all('p', **{'class':'htr_perturbation_detail'})
     return {

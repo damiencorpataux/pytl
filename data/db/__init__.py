@@ -14,11 +14,8 @@ s = session = sessionmaker()
 
 # Automap
 Base = am.automap_base()
-Base.prepare(engine, reflect=True)
+Base.prepare(engine, reflect=True, generate_relationship=am.generate_relationship)
 m = models = Base.classes
-
-# Usable models
-
 
 # Cration and population
 def create():
