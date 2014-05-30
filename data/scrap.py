@@ -11,7 +11,7 @@ def pour(url, **kwargs):
     :param kwargs: additionnal arguments for request.get()
     """
     kwargs.update({'headers':{'User-Agent':None}})
-    html = str(requests.get(url, **kwargs).content)
+    html = requests.get(url, **kwargs).text
     return bs4.BeautifulSoup(html) 
 
 def lines():
