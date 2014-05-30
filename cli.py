@@ -20,5 +20,12 @@ def deps(station : 'station search string',
     for item in data.departures(station, line):
         print('%(station)s %(line)s %(direction)s %(departures)s' % item)
 
+def web():
+    """
+    starts the standalone webserver (for dev purpose)
+    """
+    import web
+    web.app.run(host='0.0.0.0', port='5000')
+
 def run():
-    argh.dispatch_commands([search, deps])
+    argh.dispatch_commands([search, deps, web])
