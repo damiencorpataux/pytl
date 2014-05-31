@@ -11,8 +11,6 @@ def index():
         'routes': [str(r) for r in app.url_map.iter_rules()]
     })
 
-@app.route('/s/')
-@app.route('/s/<text>')
 @app.route('/search/')
 @app.route('/search/<text>')
 def search(text=None):

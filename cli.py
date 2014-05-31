@@ -39,5 +39,12 @@ def init():
         import data.db
         data.db.populate()
 
+def web():
+    """
+    starts the standalone webserver (for dev purpose)
+    """
+    import web
+    web.app.run(host='0.0.0.0', port=5000)
+
 def run():
     argh.dispatch_commands([search, deps, web, init])
