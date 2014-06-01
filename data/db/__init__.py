@@ -15,7 +15,7 @@ e = engine = sa.create_engine('mysql+mysqlconnector://tl:tl@localhost/tl')
 sm = sessionmaker = sa.orm.scoped_session(sa.orm.sessionmaker(bind=engine))
 s = session = sessionmaker()
 
-# Automap
+# Automap setup
 Base = am.automap_base()
 Base.prepare(engine, reflect=True, generate_relationship=am.generate_relationship)
 m = models = Base.classes
@@ -25,9 +25,8 @@ def create():
     """
     Drops and creates database
     """
-    filename = os.path.join(
-        os.path.dirname(os.path.realpath(__file__)),
-        'database.sql')
+    #FIXME: handle unknown database tl on drop table if exists
+    filename = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'sql')
     with open(filename) as f:
         sql = f.read()
     for stmt in [stmt.strip() for stmt in sql.split(';')]:
@@ -38,6 +37,9 @@ def create():
             else:
                 print('Error with:', stmt)
                 raise
+    #FIXME: regenerates automap classes
+    Base.prepare(engine, reflect=True, 
+                 generate_relationship=am.generate_relationship)
 
 def populate():
     """
@@ -48,6 +50,7 @@ def populate():
     # Scraps data
     populate_tl()
     populate_osm()
+    populate_geostop()
 
 def populate_tl():
     for line in tl.lines():
@@ -63,7 +66,8 @@ def populate_tl():
             s.add(m.stop(
                 orientation=stop['id'].split('_').pop(),
                 direction=stop['direction'],
-                line_id=s.query(m.line).filter(m.line.name==stop['line']).first().id,
+                line_id=s.query(m.line).filter(m.line.name==stop['line'])\
+                         .first().id,
                 station_name=stop['name']))
             s.flush()
     s.commit()
@@ -79,4 +83,16 @@ def populate_osm():
             uid=stop['uid'],
             version=stop['version']))
         s.flush()
+    s.commit()
+
+def populate_geostop():
+    q = s.query(m.stop.id, m.osm.lon, m.osm.lat)\
+         .filter(m.stop.station_name == m.osm.name, m.osm.operator == 'tl')\
+         .group_by(m.stop.id)
+    for r in q.all():
+        s.add(m.geostop(
+            stop_id=r.id,
+            #position=...,
+            lon=r.lon,
+            lat=r.lat))
     s.commit()

@@ -10,7 +10,7 @@ def search(string,line=None,station=None):
     lists matching stations and lines
     """
     for item in data.suggest(string, line=line, station=station):
-        print('%(line)s:\t%(station)s (%(direction)s %(orientation)s)' % item)
+        print('%(line)s:\t%(station)s (%(direction)s %(orientation)s) (%(lon)s, %(lat)s)' % item)
 
 #@argh.aliases('dep')
 @argh.arg('station', help='station search string')
@@ -20,7 +20,7 @@ def deps(station,line=None):
     lists departures for matching stations and lines
     """
     for item in data.departures(station, line):
-        print('%(station)s %(line)s %(direction)s %(timetable)s' % item)
+        print('%(station)s %(line)s %(direction)s %(timetable)s (%(lon)s, %(lat)s)' % item)
 
 def web():
     """
@@ -44,7 +44,7 @@ def web():
     starts the standalone webserver (for dev purpose)
     """
     import web
-    web.app.run(host='0.0.0.0', port=5000)
+    web.app.run(host='0.0.0.0', port=5000, debug=True)
 
 def run():
     argh.dispatch_commands([search, deps, web, init])

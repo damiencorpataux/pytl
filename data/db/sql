@@ -23,9 +23,10 @@ CREATE TABLE station (
     COMMENT "Human name of the station",
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
     COMMENT "Row creation timestamp",
-    root VARCHAR(255) NOT NULL
+    root VARCHAR(255) NOT NULL 
     COMMENT "Station text identifier",
-    PRIMARY KEY (name)
+    PRIMARY KEY (name),
+    INDEX (root)
 ) ENGINE=InnoDB
 COMMENT "Stations catalog";
 
@@ -43,15 +44,37 @@ CREATE TABLE stop (
     COMMENT "Line identifier",
     station_name VARCHAR(255) NOT NULL
     COMMENT "Station identifier",
+    position POINT,
+    COMMENT "Stop geolocation",
     PRIMARY KEY (id),
     FOREIGN KEY (line_id) REFERENCES line(id),
-    FOREIGN KEY (station_name) REFERENCES station(name)
+    FOREIGN KEY (station_name) REFERENCES station(name),
+    INDEX (orientation),
+    INDEX (direction)
 ) ENGINE=InnoDB
 COMMENT "A stop lays where a line crosses a station";
 
+DROP TABLE IF EXISTS geostop;
+CREATE TABLE geostop (
+    stop_id INT UNIQUE NOT NULL
+    COMMENT "Stop identifier",
+    -- position POINT NOT NULL
+    -- COMMENT "Stop position (from OSM)",
+    lon NUMERIC(10,7) NOT NULL
+    COMMENT "Position longitude",
+    lat NUMERIC(10,7) NOT NULL
+    COMMENT "Position latitude",
+    PRIMARY KEY(stop_id),
+    FOREIGN KEY (stop_id) REFERENCES stop(id),
+    -- INDEX (position),
+    INDEX (lon),
+    INDEX (lat)
+) ENGINE=InnoDB
+COMMENT "Stop geodata";
+
 DROP TABLE IF EXISTS osm;
 CREATE TABLE osm (
-    id INT NOT NULL AUTO_INCREMENT
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT
     COMMENT "Internal stop identifier",
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
     COMMENT "Row creation timestamp",
@@ -69,6 +92,13 @@ CREATE TABLE osm (
     COMMENT "OSM uid",
     version INT UNSIGNED NOT NULL
     COMMENT "OSM feature version",
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    INDEX (lon),
+    INDEX (lat),
+    INDEX (lon, lat),
+    INDEX (name),
+    INDEX (name_uic),
+    INDEX (operator),
+    INDEX (version)
 ) ENGINE=InnoDB
 COMMENT "OSM stops extract";

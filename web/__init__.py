@@ -5,6 +5,15 @@ import data
 
 app = flask.Flask(__name__)
 
+@app.errorhandler(Exception)
+def error(e):
+    if app.debug:
+        raise
+    else:
+        return flask.jsonify({
+            'error': str(e)
+        })
+
 @app.route('/')
 def index():
     return flask.jsonify({
@@ -15,11 +24,11 @@ def index():
 @app.route('/search/<text>')
 def search(text=None):
     return flask.jsonify({
-        'suggest': data.suggest(text)#, line=line, station=station)
+        'suggest': [data.dic(row) for row in data.suggest(text)]#, line=line, station=station)]
     })
 
 @app.route('/deps/<line>/<station>')
 def departures(station, line):
     return flask.jsonify({
-        'departures': [d for d in data.departures(station, line)]
+        'departures': [data.dic(row) for row in data.departures(station, line)]
     })

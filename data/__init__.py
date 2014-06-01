@@ -50,11 +50,18 @@ from data.db import session as s
 from sqlalchemy import or_
 
 def dic(result):
+    """
+    Returns a dict from a sqlalchemy model (lists are supported).
+    Values are flattened into string for json serialization.
+    :param result: a sqlalchemy model or a list of those
+    :returns: a dict or a list of those
+    """
     if type(result) is list:
-        return [{k:v for k,v in row.__dict__.items()
-                if not k.startswith('_sa')} for row in result]
+        return [dic(row) for row in result]
     else:
-        return result.__dict__
+        return {k:str(v) for k,v
+                in getattr(result, '__dict__', result).items() #supports dicts
+                if not k.startswith('_sa')}
 
 def suggest(fulltext=None, line=None, station=None, order=None,
             gowild=lambda s: s if str(s).count('%') else '%%%s%%'%s):
@@ -79,15 +86,18 @@ def suggest(fulltext=None, line=None, station=None, order=None,
     if fulltext:
         q = q.filter(or_(*[column.like(gowild(fulltext))
                            for column in searchable.values()]))
-    if order:
-        q = q.order_by(*order)
+    if not order:
+        order = (m.station.name, m.stop.direction)
+    q = q.order_by(*order)
     # Results processing
     return [{
         'line': r.line.name,
         'station': r.station.name,
         'root': r.station.root,
         'direction': r.direction, #FIXME: must be the terminus stop station name
-        'orientation': r.orientation
+        'orientation': r.orientation,
+        'lon': r.geostop_collection[0].lon if r. geostop_collection else None,
+        'lat': r.geostop_collection[0].lat if r. geostop_collection else None
     } for r in q.all()]
 
 def departures(station, line=None):
@@ -103,5 +113,6 @@ def departures(station, line=None):
             'line': item['line'],
             'station': item['station'],
             'timetable': departures['timetable'], #FIXME: must be the terminus stop station name
-            'direction': item['direction']}
-t=departures
+            'direction': item['direction'],
+            'lon': item['lon'],
+            'lat': item['lat']}
