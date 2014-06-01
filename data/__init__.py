@@ -44,7 +44,7 @@ Usage:
 >>> #displays all stations for line matching
 """
 
-import data.scrap as scrap
+import data.scrapper.tl as tl
 from data.db import models as m
 from data.db import session as s
 from sqlalchemy import or_
@@ -95,7 +95,7 @@ def departures(station, line=None):
         raise ValueError('Please specify at leat 3 characters for "station"')
     #FIXME: collect alerts too (item['alerts'])
     for item in suggest(station=station, line=line, order=[m.station.name, m.line.name, m.stop.direction]):
-        departures = scrap.departures(
+        departures = tl.departures(
             item['line'],
             '%(root)s_%(orientation)s'%item,
             item['direction'].upper())

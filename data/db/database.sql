@@ -48,3 +48,27 @@ CREATE TABLE stop (
     FOREIGN KEY (station_name) REFERENCES station(name)
 ) ENGINE=InnoDB
 COMMENT "A stop lays where a line crosses a station";
+
+DROP TABLE IF EXISTS osm;
+CREATE TABLE osm (
+    id INT NOT NULL AUTO_INCREMENT
+    COMMENT "Internal stop identifier",
+    created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    COMMENT "Row creation timestamp",
+    lon DECIMAL(10,7) NOT NULL
+    COMMENT "Longitude",
+    lat DECIMAL(10,7) NOT NULL
+    COMMENT "Latitude",
+    name VARCHAR(255)
+    COMMENT "Station name",
+    name_uic VARCHAR(255)
+    COMMENT "Station name (uic)",
+    operator VARCHAR(255)
+    COMMENT "Transport network operator",
+    uid BIGINT UNSIGNED NOT NULL
+    COMMENT "OSM uid",
+    version INT UNSIGNED NOT NULL
+    COMMENT "OSM feature version",
+    PRIMARY KEY (id)
+) ENGINE=InnoDB
+COMMENT "OSM stops extract";
