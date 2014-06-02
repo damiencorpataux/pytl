@@ -91,7 +91,7 @@ def suggest(fulltext=None, line=None, station=None, order=None,
         q = q.filter(or_(*[column.like(gowild(fulltext))
                            for column in searchable.values()]))
     if not order:
-        order = (m.station.name, m.stop.direction)
+        order = (m.station.name, m.line.name, m.stop.direction)
     q = q.order_by(*order)
     # Results processing
     return [{
