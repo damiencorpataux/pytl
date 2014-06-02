@@ -48,7 +48,6 @@ import data.scrapper.tl as tl
 from data.db import models as m
 from data.db import session as s
 from sqlalchemy import or_
-
 def dic(result):
     """
     Returns a dict from a sqlalchemy model (lists are supported).
@@ -59,7 +58,12 @@ def dic(result):
     if type(result) is list:
         return [dic(row) for row in result]
     else:
-        return {k:str(v) for k,v
+        #FIXME: curse UnicodeEncodeError: 'ascii' codec can't encode character
+        #                                 u'\xe9' in position 2: ordinal not in range(128)
+        return {k:{unicode: lambda x: x.encode('utf8'),
+                   list: lambda x: x,
+                   str: lambda x: x}.get(type(v), lambda x:str(x))(v)
+                for k,v
                 in getattr(result, '__dict__', result).items() #supports dicts
                 if not k.startswith('_sa')}
 

@@ -27,8 +27,9 @@ def search(text=None):
         'suggest': [data.dic(row) for row in data.suggest(text)]#, line=line, station=station)]
     })
 
-@app.route('/deps/<line>/<station>')
-def departures(station, line):
+@app.route('/deps/<station>')
+@app.route('/deps/<station>/<line>')
+def departures(station, line=None):
     return flask.jsonify({
         'departures': [data.dic(row) for row in data.departures(station, line)]
     })
