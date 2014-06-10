@@ -55,9 +55,10 @@ def departures(line, station, direction):
     and optionnal alerts about this line/station.
     :param line: 'name' of the line
     :param station: 'name' of the station
+    :param diretion: the direction of the bus ('A' or 'R')
     """
     if direction not in ['A', 'R']:
-        raise ValueError('"direction" valid values are "A", "B"')
+        raise ValueError('"direction" valid values are "A", "R"')
     soup = pour(
         'http://www.t-l.ch/htr.php',
         params={

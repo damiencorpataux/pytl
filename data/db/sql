@@ -44,7 +44,7 @@ CREATE TABLE stop (
     COMMENT "Line identifier",
     station_name VARCHAR(255) NOT NULL
     COMMENT "Station identifier",
-    position POINT,
+    position POINT
     COMMENT "Stop geolocation",
     PRIMARY KEY (id),
     FOREIGN KEY (line_id) REFERENCES line(id),
