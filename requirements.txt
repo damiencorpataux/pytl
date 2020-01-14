@@ -9,6 +9,6 @@ argparse==1.2.1
 beautifulsoup4==4.3.2
 itsdangerous==0.24
 osmapi==0.3.0
-requests==2.3.0
+requests==2.20.0
 wsgiref==0.1.2
 mysql-connector-python==1.1.6
